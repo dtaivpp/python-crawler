@@ -2,9 +2,11 @@ import requests
 from bs4 import BeautifulSoup
 import lxml
 import re
+from metadata_generate import metadata_generate
 #for url validation
 regex_url = re.compile(
-        r'^(?:http|ftp)s?://' # http:// or https://
+        r'^(?:http|ftp)s?://|' # http:// or https://...
+        r'^(?://)' # ...or a netloc
         r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
         r'localhost|' #localhost...
         r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
@@ -29,7 +31,7 @@ def pagegetter(url):
   response = requests.get(url)
   return response.text
 
-def soupify (page):
+def soupify (page, url):
   soup = BeautifulSoup(page, 'lxml')
   links = []
   tel = []
@@ -44,10 +46,13 @@ def soupify (page):
       bad_urls.append(a['href'])
 
   page = {
+    'url': url,
     'links': links,
     'tel': tel,
     'bad_urls': bad_urls
   }
+
+  page['metadata'] = metadata_generate(page)
 
   return page
 
@@ -62,10 +67,11 @@ def linkmanager(arr_links):
 page = pagegetter("http://regent.edu")
 
 #Adds Page to Dictionary with visited
-link_dict["http://regent.edu"] = {"visited": True}
+link_dict["http://www.regent.edu"] = {"visited": True}
 
 # Go through and pull out all links
-returned_links = soupify(page)
+returned_links = soupify(page, "http://www.regent.edu")
+
 
 # Add all links to our dict
 linkmanager(returned_links)
