@@ -37,22 +37,24 @@ def soupify (page, url):
   tel = []
   bad_urls =[]
   for a in soup.find_all('a', href=True):
+
     if re.match(regex_url, a['href']):
-      links.append(a['href'])
+      links.append({"url":a['href'], "valid":True})
       print(a['href'])
+    
     elif re.match(regex_tel, a['href']):
       tel.append(a['href'])
+    
     else:
-      bad_urls.append(a['href'])
+      links.append({"url":a['href'], "valid":False})
 
   page = {
     'url': url,
-    'links': links,
-    'tel': tel,
-    'bad_urls': bad_urls
+    'links_on_page': links,
+    'tel': tel
   }
 
-  page['metadata'] = metadata_generate(page)
+  page = metadata_generate(page)
 
   return page
 
@@ -82,7 +84,7 @@ for link in returned_links:
   if link_dict[link]['visited'] == False:
     page = pagegetter(link)
     link_dict[link] = {'visited': True}
-    returned_links = soupify(page)   
+    returned_links = soupify(page, "http://regent.edu")   
     linkmanager(returned_links) 
     print('Done') 
 
