@@ -35,7 +35,6 @@ def soupify (page, url):
   soup = BeautifulSoup(page, 'lxml')
   links = []
   tel = []
-  bad_urls =[]
   for a in soup.find_all('a', href=True):
 
     if re.match(regex_url, a['href']):
@@ -51,7 +50,7 @@ def soupify (page, url):
   page = {
     'url': url,
     'links_on_page': links,
-    'tel': tel
+    'tel_on_page': tel
   }
 
   page = metadata_generate(page)
@@ -78,6 +77,8 @@ returned_links = soupify(page, "http://www.regent.edu")
 # Add all links to our dict
 linkmanager(returned_links)
 
+def program_loop():
+  pass
 
 # Go through all the links we got from soupify line 40 and visit them and get their links
 for link in returned_links:
