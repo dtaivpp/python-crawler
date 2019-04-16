@@ -12,14 +12,18 @@ def reduce_page(updated_page, db_page):
 
 
 def _update_page(updated_page, db_page):
-  db_page['links_to_page'] += updated_page['links_to_page']
-  db_page['metadata']['links_to_page'] += updated_page['metadata']['links_to_page']
+  """Takes in an updated page and a database page to make an update
+  Returns a db formatted page"""
+  db_page['page']['links_to_page'] += updated_page['links_to_page']
+  db_page['page']['metadata']['links_to_page'] += updated_page['metadata']['links_to_page']
   return db_page
 
 
 def _visited_page(updated_page, db_page):
+  """Takes in an updated page and a database page to change it to visited
+  Returns a db formatted page"""
   # Instead of updating the db entry with all the updates we will 
   # update the updated page with info from the db_page
-  updated_page['links_to_page'] = db_page['links_to_page'] 
-  updated_page['metadata']['links_to_page'] = db_page['metadata']['links_to_page']
-  return updated_page
+  updated_page['links_to_page'] = db_page['page']['links_to_page'] 
+  updated_page['metadata']['links_to_page'] = db_page['page']['metadata']['links_to_page']
+  return {"_id":updated_page['url'],"page":updated_page}
