@@ -4,7 +4,6 @@ import re
 def metadata_generate(page):
   # Create basic metadata structure
   metadata = {
-    "url": page['url'],
     "internal_links": 0,
     "external_links": 0, 
     "telephone_nums": len(page['tel']),
