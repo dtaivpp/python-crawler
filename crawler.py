@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import lxml
 import re
 from metadata_generate import metadata_generate
+from mongodb-manager import Database
+
 #for url validation
 regex_url = re.compile(
         r'^(?:http|ftp)s?://|' # http:// or https://...
@@ -78,7 +80,20 @@ returned_links = soupify(page, "http://www.regent.edu")
 linkmanager(returned_links)
 
 def program_loop():
-  pass
+  PageDB = Database("regent.edu")
+  # Put Base page into array
+  links = [{}]
+
+  while(len(links) > 0):
+    for link in links:
+      page = pagegetter(link['page']['url'])
+      returned_page = soupify(page, link['page']['url'])
+      PageDB.insert_links(returned_page['links_on_page'])
+      PageDB.insert_page(returned_page)
+
+    links = PageDB.get_links(100)
+  
+  
 
 # Go through all the links we got from soupify line 40 and visit them and get their links
 for link in returned_links:
