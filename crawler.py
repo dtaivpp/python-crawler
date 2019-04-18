@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import lxml
 import re
 from metadata_generate import metadata_generate
-from mongodb-manager import Database
+from mongodb_manager import Database
 
 #for url validation
 regex_url = re.compile(
@@ -18,16 +18,6 @@ regex_url = re.compile(
 regex_tel = re.compile(
   r'^(tel:)'
 )
-
-# {
-#   {key:"https://regent.edu", value: {visited: True}}
-#   {key:"https://regent.edu/home", {visited: False}}
-#   {key:"https://regent.edu/page1", {visited: False}}
-#}
-
-
-link_dict = dict()
-
 
 def pagegetter(url):
   response = requests.get(url)
@@ -59,30 +49,11 @@ def soupify (page, url):
 
   return page
 
-def linkmanager(arr_links):
-  for link in arr_links:
-    if link_dict.get(link) == None:
-      link_dict[link] = {'visited': False}
 
-
-
-#Returns Html page
-page = pagegetter("http://regent.edu")
-
-#Adds Page to Dictionary with visited
-link_dict["http://www.regent.edu"] = {"visited": True}
-
-# Go through and pull out all links
-returned_links = soupify(page, "http://www.regent.edu")
-
-
-# Add all links to our dict
-linkmanager(returned_links)
-
-def program_loop():
-  PageDB = Database("regent.edu")
+def program_loop(main_url):
+  PageDB = Database(main_url)
   # Put Base page into array
-  links = [{}]
+  links = [{"page":{"url":main_url}}]
 
   while(len(links) > 0):
     for link in links:
@@ -94,13 +65,6 @@ def program_loop():
     links = PageDB.get_links(100)
   
   
-
-# Go through all the links we got from soupify line 40 and visit them and get their links
-for link in returned_links:
-  if link_dict[link]['visited'] == False:
-    page = pagegetter(link)
-    link_dict[link] = {'visited': True}
-    returned_links = soupify(page, "http://regent.edu")   
-    linkmanager(returned_links) 
-    print('Done') 
-
+if __name__ == "__main__":
+  program_loop("https://regent.edu")
+  print("Done")
