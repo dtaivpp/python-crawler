@@ -4,7 +4,7 @@ from reduce_pages import reduce_page
 class Database:
   def __init__(self, base_url):
     # Database name and client
-    self.db_name = base_url
+    self.db_name = "Regent" #base_url
 
     self.client = pymongo.MongoClient("mongodb://localhost:27017/")
     
@@ -47,5 +47,12 @@ class Database:
 
   def get_links(self,num_records):
     """Returns the number of records requested that have not been visited."""
-    cursor = self.pages_collection.find({"visited": False}, limit=num_records)
+    cursor = self.pages_collection.find({"page.visited": False, "page.valid": True}, limit=num_records)
     return cursor
+
+  def has_more_links(self):
+    num_documents = self.pages_collection.count_documents({"page.visited": False, "page.valid": True})
+    if num_documents > 0:
+      return True
+    else:
+      return False

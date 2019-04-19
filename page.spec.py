@@ -46,3 +46,8 @@ page_meta_min = {
     }
 }
 
+ "_id" : "https://www.regent.edu/programs/academic-degrees/arts-communication/", 
+ "page" : { 
+   "url" : "https://www.regent.edu/programs/academic-degrees/arts-communication/", 
+   "valid" : true, "links_to_page" : [ "https://regent.edu" ], 
+   "metadata" : { "url_components" : { "scheme" : "https", "netloc" : "www.regent.edu", "path" : "/programs/academic-degrees/arts-communication/", "params" : "", "query" : "", "fragment" : "", "netloc_min" : "regent.edu" }

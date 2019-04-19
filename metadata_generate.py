@@ -6,23 +6,26 @@ def metadata_generate(page):
   metadata = {
     "internal_links": 0,
     "external_links": 0, 
-    "telephone_nums": len(page['tel']),
+    "telephone_nums": len(page['tel_on_page']),
     "url_components": url_components(page['url'])
   }
   
   # Iterate over links updating their data/metadata
   for link in page['links_on_page']:
+    link['links_to_page'] = []
+    link['metadata'] = {}
     # Link creates url_compontents attribute of link 
-    link['metadata']['url_components'] = url_components(link['url'])
+    if link["valid"]:
+      link['metadata']['url_components'] = url_components(link['url'])
 
-    # If the link belongs to the primary page
-    if link['metadata']['url_components']['netloc_min'] == metadata['url_components']['netloc_min']:
-      metadata['internal_links'] += 1
-      link['internal'] = True
-    else: 
-      metadata['external_links'] += 1
-      link['interal'] = False
-    
+      # If the link belongs to the primary page
+      if link['metadata']['url_components']['netloc_min'] == metadata['url_components']['netloc_min']:
+        metadata['internal_links'] += 1
+        link['internal'] = True
+      else: 
+        metadata['external_links'] += 1
+        link['interal'] = False
+      
     link['metadata']['links_to_page'] = 1
     link['links_to_page'] = [ page['url'] ]
 
