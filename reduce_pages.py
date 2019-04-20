@@ -1,5 +1,5 @@
 
-def reduce_page(updated_page, db_page):
+def reduce_pages(updated_page, db_page):
   """Takes in an updated_page and a database_page
   and returns a merged one"""
   # If the new page is visited then we need to update the visited info 

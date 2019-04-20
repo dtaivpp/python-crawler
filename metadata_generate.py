@@ -2,12 +2,18 @@ from urllib.parse import urlparse
 import re
 
 def metadata_generate(page):
+  """
+  Generate the metadata object for a visited page
+
+  Parameters: 
+    Page object with 'url' property
+  """
   # Create basic metadata structure
   metadata = {
     "internal_links": 0,
     "external_links": 0, 
     "telephone_nums": len(page['tel_on_page']),
-    "url_components": url_components(page['url'])
+    "url_components": _url_components(page['url'])
   }
   
   # Iterate over links updating their data/metadata
@@ -16,7 +22,7 @@ def metadata_generate(page):
     link['metadata'] = {}
     # Link creates url_compontents attribute of link 
     if link["valid"]:
-      link['metadata']['url_components'] = url_components(link['url'])
+      link['metadata']['url_components'] = _url_components(link['url'])
 
       # If the link belongs to the primary page
       if link['metadata']['url_components']['netloc_min'] == metadata['url_components']['netloc_min']:
@@ -34,9 +40,15 @@ def metadata_generate(page):
   return page
 
 def metadata_generate_short (url):
-  return url_components(url)
+  """
+  Generate a small metadata object (for link only)
 
-def url_components(url):
+  Parameters:
+    Just a url
+  """
+  return _url_components(url)
+
+def _url_components(url):
   components = urlparse(url)
   url_components = {
     "scheme": components[0],
@@ -50,3 +62,4 @@ def url_components(url):
   # Netloc min is the base url without www. or a port number
   url_components['netloc_min'] = re.sub("^www.|:.*$", "", url_components['netloc'])
   return url_components
+

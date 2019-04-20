@@ -19,10 +19,27 @@ regex_tel = re.compile(
 )
 
 def pagegetter(url):
-  response = requests.get(url)
-  return response.text
+  """
+  Takes in url and returns HTML page. 
+  
+  Parameters:
+    URL as string
+  """
+  try:
+    response = requests.get(url)
+  except:
+    return None
+  finally:
+      return response.text
 
 def soupify (page, url):
+  """
+  Returns all the links in <a> tags from a page 
+
+  Parameters: 
+    HTML page formatted as string
+    Url that 
+  """
   soup = BeautifulSoup(page, 'lxml')
   links = []
   tel = []
@@ -50,6 +67,14 @@ def soupify (page, url):
 
 
 def program_loop(main_url):
+  """
+  Runs through and grabs each link from a page.
+  Then updates a database with those links and iterates
+    through them visiting each one
+  
+  Parameters
+    Main_Url which is the starting url
+  """
   PageDB = Database(main_url)
   # Put Base page into array
   link = {"page":{"url":main_url}}
@@ -63,9 +88,12 @@ def program_loop(main_url):
   while(PageDB.has_more_links()):
     for link in links:
       page = pagegetter(link['page']['url'])
-      returned_page = soupify(page, link['page']['url'])
-      PageDB.insert_links(returned_page['links_on_page'])
-      PageDB.insert_page(returned_page)
+      if page != None:
+        returned_page = soupify(page, link['page']['url'])
+        PageDB.insert_links(returned_page['links_on_page'])
+        PageDB.insert_page(returned_page)
+      else:
+        PageDB.update_bad_link(link['page']['url'])
 
     links = PageDB.get_links(100)
   

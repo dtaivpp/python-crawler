@@ -1,5 +1,5 @@
 import pymongo
-from reduce_pages import reduce_page
+from reduce_pages import reduce_pages
 
 class Database:
   def __init__(self, base_url):
@@ -15,7 +15,10 @@ class Database:
     self.pages_collection = self.db["pages"]
 
   def insert_links(self, url_array):
-    """Inserts a list of pages. Takes in Array of pages"""
+    """Inserts a list of pages. 
+    Parameter
+     in Array of pages
+    """
     for link in url_array:
       self.insert_page(link)
 
@@ -25,7 +28,7 @@ class Database:
     if self.pages_collection.count_documents( { "_id": updated_page['url'] } ) > 0:
         # If the link exists update its data 
 
-        page_tmp = reduce_page(
+        page_tmp = reduce_pages(
           updated_page,
           self.pages_collection.find_one( { "_id": updated_page['url'] } )
         )
@@ -46,7 +49,12 @@ class Database:
         self.pages_collection.insert_one(page_tmp)
 
   def get_links(self,num_records):
-    """Returns the number of records requested that have not been visited."""
+    """
+    Returns the number of records requested that have not been visited.
+    
+    Parameters:
+      Number of records to return
+    """
     cursor = self.pages_collection.find({"page.visited": False, "page.valid": True}, limit=num_records)
     return cursor
 
@@ -56,3 +64,6 @@ class Database:
       return True
     else:
       return False
+
+  def update_bad_link(url):
+    self.pages_collection.update_one({"_id":url}, {"$set": {"page.visited": True, "page.valid": False}})
